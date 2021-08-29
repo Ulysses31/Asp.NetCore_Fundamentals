@@ -1,0 +1,125 @@
+﻿@page "{restaurantId:int?}"
+@model OdeToFood.Pages.Restaurants.ClientRestaurantsEditModel
+@{
+	ViewData["Title"] = "Edit - Client Restaurants";
+}
+
+<div id="errorTemplate" class="alert alert-warning"></div>
+
+<h2>Client Restaurants Edit</h2>
+<hr />
+<form method="post">
+	<input type="hidden" id="restaurantId" name="restaurantId" value="0"/>
+	<div class="form-group">
+		<label for="restaurantName">Name</label>*
+		<input type="text" class="form-control" id="restaurantName" name="restaurantName" />
+		<span class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label for="restaurantLocation">Location</label>*
+		<input type="text" class="form-control" id="restaurantLocation" name="restaurantLocation" />
+		<span class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label for="restaurantCuisine">Cuisine</label>
+		<select class="form-control" id="restaurantCuisine" name="restaurantCuisine">
+			<option value="0" selected>None</option>
+			<option value="1">Mexican</option>
+			<option value="2">Italian</option>
+			<option value="3">Indian</option>
+		</select>
+		<span class="text-danger"></span>
+	</div>
+	<button id="save" class="btn btn-primary">SAVE</button>
+	<a asp-page="./ClientRestaurants" class="btn btn-danger">CANCEL</a>
+</form>
+
+@section Scripts {
+	<script>
+		$(function () {
+			$('#errorTemplate').hide();
+			$('#errorTemplate').html('');
+
+			var id = Number.parseInt(window.location.pathname.replace('/Restaurants/ClientRestaurantsEdit/', ''));
+			var restaurant = null;
+
+			if (id === 0) {
+				restaurant = {
+					id: 0,
+					name: '',
+					location: '',
+					cuisine: 0
+				};
+			} else {
+				$.ajax("/api/restaurants/" + id, { method: "GET" })
+					.then((response) => {
+						console.log(response);
+						restaurant = response;
+						if (response !== null) {
+							$('#restaurantId').val(restaurant.id);
+							$('#restaurantName').val(restaurant.name);
+							$('#restaurantLocation').val(restaurant.location);
+							$('#restaurantCuisine').val(restaurant.cuisine);
+						}
+					})
+					.catch((err) => console.error(err));
+			}
+
+			$('#save').on('click', (e) => {
+				e.preventDefault();
+
+				$('#errorTemplate').hide();
+				$('#errorTemplate').html('');
+
+				restaurant = {
+					id: Number.parseInt($('#restaurantId').val()),
+					name: $('#restaurantName').val(),
+					location: $('#restaurantLocation').val(),
+					cuisine: Number.parseInt($('#restaurantCuisine').val())
+				}
+
+				if (restaurant.id === 0) {
+					// INSERT
+					console.log('INSERT: ', restaurant);
+					$.ajax("/api/restaurants/", {
+						method: "POST",
+						dataType: "json",
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(restaurant)
+					})
+						.then((response) => {
+							console.log(response);
+							if (response.id > 0) {
+								window.location.href = '/Restaurants/ClientRestaurants';
+							}
+						})
+						.catch((err) => {
+							console.error(err.responseJSON);
+							$('#errorTemplate').html(JSON.stringify(err.responseJSON.errors));
+							$('#errorTemplate').show();
+						});
+				} else {
+					// UPDATE
+					console.log('UPDATE: ', restaurant);
+					$.ajax("/api/restaurants/" + restaurant.id, {
+						method: "PUT",
+						dataType: "json",
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(restaurant)
+					})
+						.then((response) => {
+							console.log(response);
+							if (response.id === restaurant.id) {
+								window.location.href = '/Restaurants/ClientRestaurants';
+							}
+						})
+						.catch((err) => {
+							console.error(err.responseJSON);
+							$('#errorTemplate').html(JSON.stringify(err.responseJSON.errors));
+							$('#errorTemplate').show();
+						});
+				}
+			});
+		});
+	</script>
+}

@@ -1,0 +1,86 @@
+﻿@page
+@model OdeToFood.Pages.Restaurants.ClientRestaurantsModel
+@{
+	ViewData["Title"] = "Client Restaurants";
+}
+
+<h2>Client Restaurants</h2>
+<hr />
+<a href="https://datatables.net/" target="_blank">https://datatables.net/</a>
+<table class="table table-hover w-100" id="restaurants"></table>
+<a asp-page="./ClientRestaurantsEdit" asp-route-restaurantId="0" class="btn btn-primary">NEW</a>
+<button id="edit" class="btn btn-primary">EDIT</button>
+<button id="delete" class="btn btn-danger">DELETE</button>
+
+@section Scripts {
+	<environment include="Development">
+		<link rel="stylesheet" type="text/css" href="~/lib/dataTables/DataTables-1.11.0/css/jquery.dataTables.css" />
+		<script type="text/javascript" src="~/lib/dataTables/DataTables-1.11.0/js/jquery.dataTables.js"></script>
+	</environment>
+	<environment exclude="Development">
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.0/datatables.min.css" />
+		<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.0/datatables.min.js"></script>
+	</environment>
+
+	<script>
+		$(function () {
+			var cuisines = ['Unknown', 'Mexican', 'Italian', 'Indian'];
+
+			$.ajax("/api/restaurants", { method: "GET" })
+				.then((response) => {
+					console.dir(response);
+
+					// DATATABLE
+					var table = $('#restaurants').DataTable({
+						data: response,
+						columns: [
+							{ title: 'Name', 'data': 'name' },
+							{ title: 'Location', 'data': 'location' },
+							{
+								title: 'Cuisine',
+								'data': 'cuisine',
+								'render': (data) => cuisines[data]
+							}
+						]
+					});
+
+					// SELECT ROW
+					$('#restaurants tbody tr').on('click', function () {
+						if ($(this).hasClass('selected')) {
+							$(this).removeClass('selected');
+						}
+						else {
+							table.$('tr.selected').removeClass('selected');
+							$(this).addClass('selected');
+						}
+						table.rows('.selected').data().map((item) => {
+							console.log(item);
+						});
+					});
+
+					// EDIT
+					$('#edit').on('click', function () {
+						table.rows('.selected').data().map((item, i) => {
+							//console.log('edit: ', item);
+							location.href = "/Restaurants/ClientRestaurantsEdit/" + item.id;
+						});
+					});
+
+					// DELETE
+					$('#delete').on('click', function () {
+						if (confirm('Are you sure you want to delete it?')) {
+							table.rows('.selected').data().map((item, i) => {
+								$.ajax("/api/restaurants/" + item.id, { method: "DELETE" })
+									.then((response) => console.log(response))
+									.catch((err) => console.error(err));
+								// console.log('delete: ', item);
+								table.row('.selected').remove().draw(false);
+							});
+						}
+					});
+				})
+				.catch((err) => console.error(err));
+
+		});
+	</script>
+}
