@@ -10,15 +10,6 @@
 ### Enums
 <p><b>CuisineType</b> The Cuisine options enum</p>
 
-## Prepare the Database and App for Production
-
-In SQL Management Studio go to **Logins** and create a new user **IIS AppPool\OdeToFood**
-
-In the properties of the new user go to **Server Roles** and check the **dbcreator** option.
-
-To create the database connection string to the main client application create new **appsettings.Production.json** <br/>
-file and set the production database connection string and publish the App.
-
 
 # GitHub
 
