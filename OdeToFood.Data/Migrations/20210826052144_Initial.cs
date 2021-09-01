@@ -8,16 +8,14 @@ namespace OdeToFood.Data.Migrations
 		{
 			migrationBuilder.CreateTable(
 					name: "Restaurants",
-					columns: table => new
-					{
+					columns: table => new {
 						Id = table.Column<int>(type: "int", nullable: false)
 									.Annotation("SqlServer:Identity", "1, 1"),
 						Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
 						Location = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
 						Cuisine = table.Column<int>(type: "int", nullable: false)
 					},
-					constraints: table =>
-					{
+					constraints: table => {
 						table.PrimaryKey("PK_Restaurants", x => x.Id);
 					});
 		}

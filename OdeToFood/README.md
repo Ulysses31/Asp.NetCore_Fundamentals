@@ -4,6 +4,8 @@
 
 <p>This is the main project</p>
 
+# Publish App
+To publish the application in a folder **dotnet publish -o c:\temp\odetofood --self-contained -r win-x64** 
 
 # GitHub
 

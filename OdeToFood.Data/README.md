@@ -9,6 +9,13 @@
 <p><b>InMemoryRestaurantData</b> The data in memory.</p>
 <p><b>SqlRestaurantData</b> The database data.</p>
 
+# Database EF Core commands
+Generate migration **dotnet-ef migrations add migration_name -v -s ../OdeToFood/OdeToFood.csproj**
+
+Generate migration script **dotnet-ef migrations script -v -s ../OdeToFood/OdeToFood.csproj**
+
+Update database with current migration **dotnet-ef database update -v -s ../OdeToFood/OdeToFood.csproj**
+
 # GitHub
 
 GitHub URL https://github.com/Ulysses31/react-tasks-mern.git
